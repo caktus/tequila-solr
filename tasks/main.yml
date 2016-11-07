@@ -1,1 +1,81 @@
 ---
+- name: remove supervisor system package
+  apt: pkg=supervisor state=absent
+
+# pip install to obtain a consistent version number
+- name: pip install supervisor
+  pip: name=supervisor version=3.0
+
+- name: install the jdk
+  apt: name=openjdk-8-jre-headless state=present update-cache=yes cache_valid_time=3600
+
+- name: check for existing solr installation
+  stat: path={{ solr_dir }}
+  register: solr_installed
+
+- name: download solr
+  get_url:
+    url: "http://archive.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
+    dest: /tmp/
+  when: solr_installed.stat.is_dir == False
+
+- name: extract solr
+  unarchive:
+    src: /tmp/solr-{{ solr_version }}.tgz
+    dest: {{ root_dir }}
+    remote_src: yes
+    owner: "{{ project_name }}"
+    group: "{{ project_name }}"
+  when: solr_installed.stat.is_dir == False
+
+- name: copy the solr project directory
+  command: cp -r example {{ project_name }}
+  args:
+    chdir: "{{ solr_dir }}"
+  creates: "{{ solr_dir }}/{{ project_name }}"
+
+- name: move the core directory
+  command: mv {{ project_name }}/solr/collection1 {{ project_name }}/solr/{{ solr_core_name }}
+  args:
+    chdir: "{{ solr_dir }}"
+  creates: "{{ solr_dir }}/{{ project_name }}/solr/{{ solr_core_name }}"
+
+# TODO
+# - name: configure solr stopwords
+
+# TODO
+# - name: configure solr
+
+- name: upload solr schema
+  copy:
+    src: "{{ solr_schema_file }}"
+    dest: "{{ solr_dir }}/{{ project_name }}/solr/conf/"
+
+- name: set the ownership and mode of the solr project directory
+  file:
+    path: "{{ solr_dir }}/{{ project_name }}"
+    state: directory
+    owner: "{{ project_name }}"
+    group: "{{ project_name }}"
+    mode: 775
+    recurse: yes
+
+- name: set up solr under supervisord
+  template:
+    src: solr.conf
+    dest: /etc/supervisor/conf.d/{{ project_name }}-solr.conf
+    owner: root
+    group: root
+    mode: 644
+  register: supervisor_solr
+
+- name: reread supervisor conf files
+  command: supervisorctl reread
+  when: supervisor_solr|changed
+
+- name: reload supervisord
+  command: supervisorctl reload
+  when: supervisor_solr|changed
+
+- name: ensure gunicorn is running
+  supervisorctl: name={{ project_name }}-solr state=started
