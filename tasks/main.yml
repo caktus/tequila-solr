@@ -32,13 +32,13 @@
   command: cp -r example {{ project_name }}
   args:
     chdir: "{{ solr_dir }}"
-  creates: "{{ solr_dir }}/{{ project_name }}"
+    creates: "{{ solr_dir }}/{{ project_name }}"
 
 - name: move the core directory
   command: mv {{ project_name }}/solr/collection1 {{ project_name }}/solr/{{ solr_core_name }}
   args:
     chdir: "{{ solr_dir }}"
-  creates: "{{ solr_dir }}/{{ project_name }}/solr/{{ solr_core_name }}"
+    creates: "{{ solr_dir }}/{{ project_name }}/solr/{{ solr_core_name }}"
 
 # TODO
 # - name: configure solr stopwords
