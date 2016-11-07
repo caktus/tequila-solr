@@ -22,7 +22,7 @@
 - name: extract solr
   unarchive:
     src: /tmp/solr-{{ solr_version }}.tgz
-    dest: {{ root_dir }}
+    dest: "{{ root_dir }}"
     remote_src: yes
     owner: "{{ project_name }}"
     group: "{{ project_name }}"
