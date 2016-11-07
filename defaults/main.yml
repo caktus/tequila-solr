@@ -1,0 +1,5 @@
+---
+root_dir: "/var/www/{{ project_name }}"
+log_dir: "{{ root_dir }}/log"
+solr_dir: "{{ root_dir }}/solr-{{ solr_version }}"
+solr_core_name: "collection1"
