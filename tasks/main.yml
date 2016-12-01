@@ -68,11 +68,11 @@
 
 - name: set the ownership and mode of the solr project directory
   file:
-    path: "{{ solr_dir }}/{{ project_name }}"
+    path: "{{ solr_dir }}"
     state: directory
     owner: "{{ project_name }}"
     group: "{{ project_name }}"
-    mode: 775
+    mode: u=rwX,g=rX,o=rX
     recurse: yes
 
 - name: set up solr under supervisord
@@ -81,7 +81,7 @@
     dest: /etc/supervisor/conf.d/{{ project_name }}-solr.conf
     owner: root
     group: root
-    mode: 644
+    mode: 0644
   register: supervisor_solr
 
 - name: reread supervisor conf files
