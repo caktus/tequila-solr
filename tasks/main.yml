@@ -64,7 +64,8 @@
 - name: upload solr schema
   copy:
     src: "{{ solr_schema_file }}"
-    dest: "{{ solr_dir }}/{{ project_name }}/solr/conf/"
+    dest: "{{ solr_dir }}/{{ project_name }}/solr/{{ item }}/conf/"
+  with_items: "{{ solr_cores }}"
 
 - name: set the ownership and mode of the solr project directory
   file:
