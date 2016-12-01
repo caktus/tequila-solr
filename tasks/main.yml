@@ -9,19 +9,28 @@
 - name: install the jdk
   apt: name=openjdk-8-jre-headless state=present update-cache=yes cache_valid_time=3600
 
+- name: set solr_filename
+  set_fact:
+    solr_filename: "solr-{{ solr_version }}"
+
+- name: set solr_dir
+  set_fact:
+    solr_dir: "{{ root_dir }}/{{ solr_filename }}"
+
 - name: check for existing solr installation
   stat: path={{ solr_dir }}
   register: solr_installed
 
 - name: download solr
   get_url:
-    url: "http://archive.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
-    dest: /tmp/
+    url: "{{ solr_mirror }}/lucene/solr/{{ solr_version }}/{{ solr_filename }}.tgz"
+    dest: "{{ solr_workspace }}/{{ solr_filename }}.tgz"
+    force: no
   when: solr_installed.stat.is_dir == False
 
 - name: extract solr
   unarchive:
-    src: /tmp/solr-{{ solr_version }}.tgz
+    src: "{{ solr_workspace }}/{{ solr_filename }}.tgz"
     dest: "{{ root_dir }}"
     remote_src: yes
     owner: "{{ project_name }}"
@@ -34,11 +43,16 @@
     chdir: "{{ solr_dir }}"
     creates: "{{ solr_dir }}/{{ project_name }}"
 
-- name: move the core directory
-  command: mv {{ project_name }}/solr/collection1 {{ project_name }}/solr/{{ solr_core_name }}
+- name: create copies for all of the cores
+  command: cp -r {{ project_name }}/solr/collection1 {{ project_name }}/solr/{{ item }}
   args:
     chdir: "{{ solr_dir }}"
-    creates: "{{ solr_dir }}/{{ project_name }}/solr/{{ solr_core_name }}"
+    creates: "{{ solr_dir }}/{{ project_name }}/solr/{{ item }}"
+  with_items: "{{ solr_cores }}"
+
+- name: remove collection1
+  file: path={{ solr_dir }}/{{ project_name }}/solr/collection1 state=absent
+  when: "'collection1' not in solr_cores"
 
 # TODO
 # - name: configure solr stopwords

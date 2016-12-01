@@ -67,9 +67,9 @@ role:
 - ``project_name`` **required**
 - ``root_dir`` **default:** ``"/var/www/{{ project_name }}"``
 - ``log_dir`` **default:** ``"{{ root_dir }}/log"``
-- ``solr_version`` **required** (ex: ``"4.4.0"``)
-- ``solr_dir`` **default:** ``"{{ root_dir }}/solr-{{ solr_version }}"``
-- ``solr_core_name`` **default:** ``"collection1"``
+- ``solr_mirror`` **default:** ``"https://archive.apache.org/dist"``
+- ``solr_version`` **default:** ``"4.9.1"``
+- ``solr_cores`` **default:** ``['collection1']``
 - ``solr_schema_file`` **required** (ex: ``"files/schema.xml"``)
 - ``solr_xms`` **default:** ``"256M"``
 - ``solr_xmx`` **default:** ``"512M"``

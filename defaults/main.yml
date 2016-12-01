@@ -1,8 +1,16 @@
 ---
 root_dir: "/var/www/{{ project_name }}"
 log_dir: "{{ root_dir }}/log"
-solr_dir: "{{ root_dir }}/solr-{{ solr_version }}"
-solr_core_name: "collection1"
+
+solr_workspace: /root
+solr_mirror: "https://archive.apache.org/dist"
+solr_version: "4.9.1"
+solr_host: "0.0.0.0"
+solr_port: "8983"
 
 solr_xms: "256M"
 solr_xmx: "512M"
+
+solr_timezone: "UTC"
+solr_cores:
+  - "collection1"
