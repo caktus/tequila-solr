@@ -26,16 +26,17 @@
     url: "{{ solr_mirror }}/lucene/solr/{{ solr_version }}/{{ solr_filename }}.tgz"
     dest: "{{ solr_workspace }}/{{ solr_filename }}.tgz"
     force: no
-  when: solr_installed.stat.is_dir == False
+  when: solr_installed.stat.isdir is not defined
 
 - name: extract solr
   unarchive:
     src: "{{ solr_workspace }}/{{ solr_filename }}.tgz"
     dest: "{{ root_dir }}"
+    copy: no
     remote_src: yes
     owner: "{{ project_name }}"
     group: "{{ project_name }}"
-  when: solr_installed.stat.is_dir == False
+  when: solr_installed.stat.isdir is not defined
 
 - name: copy the solr project directory
   command: cp -r example {{ project_name }}
