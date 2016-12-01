@@ -77,5 +77,5 @@
   command: supervisorctl reload
   when: supervisor_solr|changed
 
-- name: ensure gunicorn is running
+- name: ensure solr is running
   supervisorctl: name={{ project_name }}-solr state=started

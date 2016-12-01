@@ -71,3 +71,5 @@ role:
 - ``solr_dir`` **default:** ``"{{ root_dir }}/solr-{{ solr_version }}"``
 - ``solr_core_name`` **default:** ``"collection1"``
 - ``solr_schema_file`` **required** (ex: ``"files/schema.xml"``)
+- ``solr_xms`` **default:** ``"256M"``
+- ``solr_xmx`` **default:** ``"512M"``
